@@ -1,139 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Gemini Chatbot</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-    body {
-      background-color: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .chat-container {
-      background: white;
-      width: 400px;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 16px;
-      color: #333;
-    }
-    .chat-box {
-      height: 400px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .message {
-      padding: 10px 14px;
-      border-radius: 18px;
-      max-width: 80%;
-      word-wrap: break-word;
-    }
-    .user {
-      background-color: #4285f4;
-      color: white;
-      align-self: flex-end;
-    }
-    .bot {
-      background-color: #e8e8e8;
-      color: #333;
-      align-self: flex-start;
-    }
-    .input-area {
-      display: flex;
-      gap: 8px;
-    }
-    input {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-    }
-    button {
-      padding: 10px 16px;
-      background-color: #4285f4;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    button:hover {
-      background-color: #3367d6;
-    }
-  </style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>MNHLLOKTY // AI_INTERFACE</title>
+ <style>
+ /* --- MONOLITHIC DESIGN SYSTEM --- */
+ :root {
+ --bg-color: #050505;
+ --container-bg: #000000;
+ --accent-color: #00ffcc; /* Neon Cyan */
+ --text-main: #ffffff;
+ --text-dim: #555555;
+ --border-color: #222222;
+ }
+
+ * {
+ margin: 0;
+ padding: 0;
+ box-sizing: border-box;
+ font-family: 'Courier New', Courier, monospace;
+ }
+
+ body {
+ background-color: var(--bg-color);
+ color: var(--text-main);
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ height: 100vh;
+ padding: 20px;
+ }
+
+ .monolith-container {
+ width: 100%;
+ max-width: 700px;
+ height: 80vh;
+ background: var(--container-bg);
+ border: 1px solid var(--border-color);
+ display: flex;
+ flex-direction: column;
+ padding: 40px;
+ box-shadow: 0 0 50px rgba(0,0,0,1);
+ }
+
+ header {
+ border-bottom: 1px solid var(--border-color);
+ padding-bottom: 20px;
+ margin-bottom: 20px;
+ }
+
+ h1 {
+ font-size: 12px;
+ text-transform: uppercase;
+ letter-spacing: 8px;
+ color: var(--text-dim);
+ }
+
+ #chatBox {
+ flex: 1;
+ overflow-y: auto;
+ margin-bottom: 30px;
+ display: flex;
+ flex-direction: column;
+ gap: 20px;
+ padding-right: 10px;
+ }
+
+ /* Custom Scrollbar */
+ #chatBox::-webkit-scrollbar { width: 2px; }
+ #chatBox::-webkit-scrollbar-thumb { background: var(--border-color); }
+
+ .msg {
+ font-size: 14px;
+ line-height: 1.6;
+ animation: fadeIn 0.3s ease;
+ }
+
+ @keyframes fadeIn {
+ from { opacity: 0; transform: translateY(5px); }
+ to { opacity: 1; transform: translateY(0); }
+ }
+
+ .user-msg {
+ color: var(--text-main);
+ border-left: 2px solid var(--text-main);
+ padding-left: 15px;
+ }
+
+ .bot-msg {
+ color: var(--accent-color);
+ border-left: 2px solid var(--accent-color);
+ padding-left: 15px;
+ }
+
+ .input-area {
+ display: flex;
+ flex-direction: column;
+ gap: 15px;
+ }
+
+ input {
+ background: transparent;
+ border: none;
+ border-bottom: 1px solid var(--border-color);
+ color: var(--accent-color);
+ padding: 10px 0;
+ font-size: 16px;
+ outline: none;
+ transition: border-color 0.4s;
+ }
+
+ input:focus {
+ border-bottom: 1px solid var(--accent-color);
+ }
+
+ button {
+ align-self: flex-end;
+ background: var(--text-main);
+ color: #000;
+ border: none;
+ padding: 10px 30px;
+ font-size: 11px;
+ font-weight: bold;
+ text-transform: uppercase;
+ letter-spacing: 2px;
+ cursor: pointer;
+ transition: 0.3s;
+ }
+
+ button:hover {
+ background: var(--accent-color);
+ }
+
+ .status-dot {
+ height: 6px;
+ width: 6px;
+ background-color: var(--accent-color);
+ border-radius: 50%;
+ display: inline-block;
+ margin-right: 10px;
+ box-shadow: 0 0 8px var(--accent-color);
+ }
+ </style>
 </head>
 <body>
-  <div class="chat-container">
-    <h1>My AI Chatbot</h1>
-    <div class="chat-box" id="chatBox"></div>
-    <div class="input-area">
-      <input type="text" id="userInput" placeholder="Type a message..." />
-      <button onclick="sendMessage()">Send</button>
-    </div>
-  </div>
-  <script>
-    const API_KEY = "AIzaSyDQXzHBKFaRYSAoIBcf6m0_N-s5K8t68So";
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
-    async function sendMessage() {
-      const input = document.getElementById("userInput");
-      const chatBox = document.getElementById("chatBox");
-      const userText = input.value.trim();
+<div class="monolith-container">
+ <header>
+ <h1><span class="status-dot"></span>MNHLLOKTY // CORE_V2</h1>
+ </header>
 
-      if (!userText) return;
+ <div id="chatBox">
+ <div class="msg bot-msg">> TERMINAL READY. ENTER COMMAND.</div>
+ </div>
 
-      chatBox.innerHTML += `<div class="message user">${userText}</div>`;
-      input.value = "";
-      chatBox.scrollTop = chatBox.scrollHeight;
+ <div class="input-area">
+ <input type="text" id="userInput" placeholder="TYPE_MESSAGE_HERE..." autocomplete="off">
+ <button onclick="sendMessage()">Execute</button>
+ </div>
+</div>
 
-      chatBox.innerHTML += `<div class="message bot" id="loading">Thinking...</div>`;
+<script>
+ // --- CORE LOGIC ---
+ const API_KEY = "AIzaSyDQXzHBKFaRYSAoIBcf6m0_N-s5K8t68So";
+ const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
-      try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: userText }] }]
-          })
-        });
+ async function sendMessage() {
+ const input = document.getElementById("userInput");
+ const chatBox = document.getElementById("chatBox");
+ const userText = input.value.trim();
 
-        const data = await response.json();
-        const botReply = data.candidates[0].content.parts[0].text;
+ if (!userText) return;
 
-        document.getElementById("loading").remove();
-        chatBox.innerHTML += `<div class="message bot">${botReply}</div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
+ // Display User Message
+ chatBox.innerHTML += `<div class="msg user-msg">> USER: ${userText}</div>`;
+ input.value = "";
+ chatBox.scrollTop = chatBox.scrollHeight;
 
-      } catch (error) {
-        document.getElementById("loading").remove();
-        chatBox.innerHTML += `<div class="message bot">Something went wrong. Try again.</div>`;
-      }
-    }
+ // Placeholder for AI
+ const tempId = "id-" + Date.now();
+ chatBox.innerHTML += `<div class="msg bot-msg" id="${tempId}">> SYSTEM: PROCESSING...</div>`;
 
-    document.getElementById("userInput").addEventListener("keypress", function(e) {
-      if (e.key === "Enter") sendMessage();
-    });
-  </script>
+ try {
+ const response = await fetch(API_URL, {
+ method: "POST",
+ headers: { "Content-Type": "application/json" },
+ body: JSON.stringify({
+ contents: [{ parts: [{ text: userText }] }]
+ })
+ });
+
+ const data = await response.json();
+
+ if (data.error) {
+ document.getElementById(tempId).innerText = `> ERROR: ${data.error.message}`;
+ return;
+ }
+
+ const botReply = data.candidates[0].content.parts[0].text;
+ document.getElementById(tempId).innerText = `> MNHLLOKTY: ${botReply}`;
+
+ } catch (error) {
+ document.getElementById(tempId).innerText = "> SYSTEM: DATA_LINK_FAILURE";
+ console.error(error);
+ }
+
+ chatBox.scrollTop = chatBox.scrollHeight;
+ }
+
+ // Enter Key Binding
+ document.getElementById("userInput").addEventListener("keypress", (e) => {
+ if (e.key === "Enter") sendMessage();
+ });
+</script>
+
 </body>
 </html>
